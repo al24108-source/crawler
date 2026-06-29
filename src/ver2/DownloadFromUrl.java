@@ -5,21 +5,27 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import java.net.URL;
 import java.net.URLConnection;
+
+import java.nio.file.Path;
 
 public class DownloadFromUrl {
 
     String url;
-    String srcpath;
-    String folderName;
-    String manageUrl;
+    Path path;
+    String removedUrl;
+
+    String fileName;
+    Path downloadPath;
     
+    int index;
+
     // コンストラクタ
-    DownloadFromUrl(String url, String srcpath){
+    DownloadFromUrl(String url, Path path){
         this.url = url;
-        this.srcpath = srcpath;
-        manageUrl = url;
+        this.path = path;
     }
 
     // URLからダウンロードする
@@ -27,27 +33,29 @@ public class DownloadFromUrl {
         
         // http:// を除去
         if(url.startsWith("https://")){
-            manageUrl = manageUrl.replace("https://", "");
+            removedUrl = url.replace("https://", "");
         }
         
-        // URLの"/"ごとにフォルダを制作
-        MakeFolder makeFolder = new MakeFolder();
-        while(manageUrl.indexOf("/") >= 0){
-            folderName = makeFolderName(manageUrl);
-            srcpath = makeFolder.make(folderName,srcpath);
-            manageUrl = manageUrl.substring(folderName.length() + 1);
+        index = removedUrl.lastIndexOf("/");
+        if(index >= 0){
+            fileName = removedUrl.substring(index + 1);
+            downloadPath = path.resolve(removedUrl.substring(0, index));
         }
 
+        // URLの"/"ごとにフォルダを制作
+        MakeFolder makeFolder = new MakeFolder();
+        makeFolder.make(downloadPath);
+
         // URLから"?"を除去
-        int index = manageUrl.indexOf("?");
+        index = fileName.indexOf("?");
         if(index >= 0){
-            manageUrl = manageUrl.substring(0, index);
+            fileName = fileName.substring(0, index);
         }
 
         // URLから拡張子を除去
-        index = manageUrl.indexOf(".");
+        index = fileName.lastIndexOf(".");
         if(index >= 0){
-            manageUrl = manageUrl.substring(0, index);
+            fileName = fileName.substring(0, index);
         }
 
         try{
@@ -60,7 +68,7 @@ public class DownloadFromUrl {
             String fileExtension = getFileExtension(con.getContentType());
 
             // ファイル名を作成
-            String filepath =  srcpath + manageUrl + fileExtension;
+            String filepath =  downloadPath.toString() + fileName + fileExtension;
             
             // ダウンロード
             InputStream is = con.getInputStream();
@@ -79,7 +87,7 @@ public class DownloadFromUrl {
         }catch(Exception e){
             System.out.println(e);
             try{
-                BufferedWriter bw = new BufferedWriter(new FileWriter(srcpath + "Exception.txt", true));
+                BufferedWriter bw = new BufferedWriter(new FileWriter(path + "Exception.txt", true));
                 bw.write(e + "\n");
                 bw.close();
             }catch(Exception e2){
@@ -136,7 +144,7 @@ public class DownloadFromUrl {
             fileExtension = ".js";
         }else{
             try{
-                BufferedWriter bw = new BufferedWriter(new FileWriter(srcpath + "ErrorFileExtension.txt", true));
+                BufferedWriter bw = new BufferedWriter(new FileWriter(path + "ErrorFileExtension.txt", true));
                 bw.write("不明な拡張子：" + contentsType + "\n");
                 bw.close();
 

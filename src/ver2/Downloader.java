@@ -1,15 +1,17 @@
 package ver2;
 
+import java.nio.file.Path;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class Downloader {
     Document doc;
-    static String srcpath;
+    static Path srcpath;
 
     // コンストラクタ
-    Downloader(Document doc, String srcpath){
+    Downloader(Document doc, Path srcpath){
         this.doc = doc;
         Downloader.srcpath = srcpath;
     }
