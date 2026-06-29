@@ -18,7 +18,7 @@ public class CrawlerMain {
         
         ReplaceCannotUseWord replaceCannotUseWord = new ReplaceCannotUseWord();
         String replacedDownloadUrl = replaceCannotUseWord.replace(downloadUrl);
-        Path urlNameFolder = downloadFolder.resolve(replacedDownloadUrl);
+        Path urlNameFolder = currentPath.resolve("download").resolve(replacedDownloadUrl);
         makeFolder.make(urlNameFolder);
         
         Crawler crawler = new Crawler(downloadUrl, depth, urlNameFolder);
