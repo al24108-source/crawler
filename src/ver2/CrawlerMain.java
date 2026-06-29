@@ -24,7 +24,7 @@ public class CrawlerMain {
         Path urlNameFolder = downloadFolder.resolve(replacedDownloadUrl);
         makeFolder.make(urlNameFolder);
         
-        Crawler crawler = new Crawler(downloadUrl, depth, urlNameFolder.toString());
+        Crawler crawler = new Crawler(downloadUrl, depth, urlNameFolder);
         try{
             crawler.crawl();
         }catch(Exception e){

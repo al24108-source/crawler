@@ -2,7 +2,6 @@ package ver2;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.util.HashMap;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,73 +15,44 @@ public class Crawler {
     Document doc;
 
     // static変数
-    static String folderpath;
-    static String srcpath;
+    static Path UrlNameFolder;
 
     // URLを保存する静的なハッシュマップ
-    static HashMap<String, String> urls = new HashMap<>();
 
     // 保存するhtmlのパス
-    String docSavepath;
+    Path docSavePath;
 
-
+    NextLinkMap nextLinkMap = new NextLinkMap();
 
     // CrawlerMainからのみのコンストラクタ
-    Crawler(String URL, int depth, String folderpath){
+    Crawler(String url, int depth, Path UrlNameFolder){
         try{
-            this.doc = Jsoup.connect(URL).get();
-            this.depth = depth;
-            Crawler.folderpath = folderpath;
-            Crawler.srcpath = folderpath + "src\\";
-    
-            // 保存するhtmlのファイル名
-            String fileName = doc.title();
-            // ファイル名に使えない文字を置換
-            fileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "_");
-            // 保存するhtmlのパスを作成
-            docSavepath = folderpath + fileName + ".html";
+            this.doc = Jsoup.connect(url).get();
         }catch(Exception e){
             System.out.println(e);
         }
+        this.depth = depth;
+        this.UrlNameFolder = UrlNameFolder;
+        this.docSavePath = UrlNameFolder.resolve(url);
     }
     
-    // 再起の際のコンストラクタ
-    Crawler(String URL, int depth){
-        try{
-            this.doc = Jsoup.connect(URL).get();
-            this.depth = depth;
-
-            // 保存するhtmlのファイル名
-            String fileName = doc.title();
-            // ファイル名に使えない文字を置換
-            fileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "_");
-            // 保存するhtmlのパスを作成
-            docSavepath = folderpath + fileName + ".html";
-        }catch(Exception e){
-            System.out.println(e);
-        }
-    }
-    
-
-
     // クロールメソッド
-    public boolean crawl() {
+    public void crawl() {
         
         // mapに保存されている場合は戻る
-        if(urls.containsKey(doc.location())){
-            docSavepath = urls.get(doc.location());
-            return true;
+        if(nextLinkMap.containsKey(doc.location())){
+            return;
         }
         
         // depthが残っていないならクロールせずに戻る
         if(depth <= 0){
-            return false;
+            return;
         }
 
-        System.out.println("title : " + doc.title());
+        System.out.println(doc.title());
         
         // mapに追加　<url, そのurlから保存するhtmlのパス>
-        urls.put(doc.location(), docSavepath);
+        nextLinkMap.put(doc.location(), docSavePath);
 
         // クロール開始
         try{
