@@ -23,7 +23,7 @@ public class CrawlerMain {
         String replacedDownloadUrl = replaceCannotUseWord.replace(downloadUrl);
         Path urlNameFolder = downloadFolder.resolve(replacedDownloadUrl);
         makeFolder.make(urlNameFolder);
-
+        
         Crawler crawler = new Crawler(downloadUrl, depth, urlNameFolder.toString());
         try{
             crawler.crawl();

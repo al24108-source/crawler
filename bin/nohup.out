@@ -1,0 +1,10 @@
+フォルダを作成しました
+フォルダを作成しました
+Exception in thread "main" java.lang.NoClassDefFoundError: org/jsoup/Jsoup
+	at ver2.Crawler.<init>(Crawler.java:33)
+	at ver2.CrawlerMain.main(CrawlerMain.java:27)
+Caused by: java.lang.ClassNotFoundException: org.jsoup.Jsoup
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526)
+	... 2 more

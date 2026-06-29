@@ -1,0 +1,2 @@
+Error: Could not find or load main class ver2.CrawlerMain
+Caused by: java.lang.ClassNotFoundException: ver2.CrawlerMain
