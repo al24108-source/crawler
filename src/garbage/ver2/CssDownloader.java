@@ -22,7 +22,7 @@ public class CssDownloader {
             String url = element.attr("abs:href");
             
             // ダウンロードし、属性値の変更
-            DownloadFromUrl downloadFromUrl = new DownloadFromUrl(url, folderpath);
+            UrlDownloader downloadFromUrl = new UrlDownloader(url, folderpath);
             element.attr("href", downloadFromUrl.download());
         }
     }

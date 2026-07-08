@@ -22,7 +22,7 @@ public class JsDownloader {
             String url = element.attr("abs:src");
             
             // ダウンロードし、属性値の変更
-            DownloadFromUrl downloadFromUrl = new DownloadFromUrl(url, folderpath);
+            UrlDownloader downloadFromUrl = new UrlDownloader(url, folderpath);
             element.attr("src", downloadFromUrl.download());
         }
     }

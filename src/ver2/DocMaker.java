@@ -1,0 +1,20 @@
+package ver2;
+
+import java.io.IOException;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+public class DocMaker {
+    
+    public Document make(String url) {
+        Document doc;
+        try {
+            doc = Jsoup.connect(url).get();
+            return doc;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+}

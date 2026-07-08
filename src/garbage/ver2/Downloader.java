@@ -23,7 +23,7 @@ public class Downloader {
             String url = element.attr("abs:src");
             
             // ダウンロードし、属性値の変更
-            DownloadFromUrl downloadFromUrl = new DownloadFromUrl(url, srcpath);
+            UrlDownloader downloadFromUrl = new UrlDownloader(url, srcpath);
             element.attr("src", downloadFromUrl.download());
 
             sleep(100);
@@ -37,7 +37,7 @@ public class Downloader {
             String url = element.attr("abs:href");
             
             // ダウンロードし、属性値の変更
-            DownloadFromUrl downloadFromUrl = new DownloadFromUrl(url, srcpath);
+            UrlDownloader downloadFromUrl = new UrlDownloader(url, srcpath);
             element.attr("href", downloadFromUrl.download());
 
             sleep(100);
@@ -51,7 +51,7 @@ public class Downloader {
             String url = element.attr("abs:src");
             
             // ダウンロードし、属性値の変更
-            DownloadFromUrl downloadFromUrl = new DownloadFromUrl(url, srcpath);
+            UrlDownloader downloadFromUrl = new UrlDownloader(url, srcpath);
             element.attr("src", downloadFromUrl.download());
 
             sleep(100);
