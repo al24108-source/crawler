@@ -85,14 +85,9 @@ public class UrlDownloader {
         Path filepath =  downloadPath.resolve(fileName + fileExtension);
         
         // ダウンロード
-        InputStream is;
-        try {
-            is = con.getInputStream();
-            OutputStream os = new FileOutputStream(filepath.toString());
-            int line;
-            while((line = is.read()) != -1){
-                os.write(line);
-            }
+        try (InputStream is = con.getInputStream();
+            OutputStream os = new FileOutputStream(filepath.toString())) {
+            is.transferTo(os);
             os.close();
         } catch (IOException e) {
             e.printStackTrace();

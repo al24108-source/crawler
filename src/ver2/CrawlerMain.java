@@ -8,7 +8,7 @@ public class CrawlerMain {
     static String targetUrl = "https://www.rakuten.co.jp/";
     // static String downloadUrl = "https://books.toscrape.com/";
 
-    static int maxDepth = 2;
+    static int maxDepth = 1;
     static int currentDepth = 1;
     
     public static void main(String[] args){
@@ -16,7 +16,6 @@ public class CrawlerMain {
         // クロール用の保存フォルダを指すパスの作成
         Path folderPath = makeCrawlFolderPath();
         
-
         // クロール
         Crawler crawler = new Crawler(folderPath, maxDepth);
         crawler.crawl(targetUrl, currentDepth);

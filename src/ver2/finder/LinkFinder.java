@@ -1,7 +1,7 @@
 package ver2.finder;
 
-import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -9,11 +9,16 @@ import org.jsoup.select.Elements;
 
 public class LinkFinder {
 
-    public void find(Document doc, HashMap<String, Path> linkMap) {
-        
+    public List<String> find(Document doc) {
+        List<String> urls = new ArrayList<>();
         Elements links = doc.select("a[href]");
-        for(Element element : links){
-            linkMap.put(element.attr("abs:href"), null);
+        for (Element element : links) {
+            String absUrl = element.attr("abs:href");
+            if (!absUrl.isEmpty()) {
+                urls.add(absUrl);
+                // System.out.println(absUrl);
+            }
         }
+        return urls;
     }
 }

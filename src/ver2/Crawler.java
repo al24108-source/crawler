@@ -12,37 +12,37 @@ import java.util.List;
 public class Crawler {
 
     // resourceを保存するパス
-    static Path resourceFolderPath;
+    Path resourceFolderPath;
 
     // linkを保存するパス
-    static Path linkFolderPath;
+    Path linkFolderPath;
 
     // 最大深度
-    static int maxDepth;
+    int maxDepth;
 
     // docを保存する配列
-    static ArrayList<Document> docList = new ArrayList<Document>();
+    ArrayList<Document> docList = new ArrayList<Document>();
 
     // docを書き換える際に使うマップ
     // link用 <url, そのurlから取得するファイルのパス>
-    static HashMap<String, Path> linkMap = new HashMap<String, Path>();
+    HashMap<String, Path> linkMap = new HashMap<String, Path>();
     // resource用 <url, そのurlから取得するファイルのパス>
-    static HashMap<String, Path> resourceMap = new HashMap<String, Path>();
+    HashMap<String, Path> resourceMap = new HashMap<String, Path>();
     
 
     public Crawler(Path folderPath, int maxDepth) {
         FolderMaker folderMaker = new FolderMaker();
 
         // resourceフォルダの制作
-        Crawler.resourceFolderPath = folderPath.resolve("resource");
+        this.resourceFolderPath = folderPath.resolve("resource");
         folderMaker.make(resourceFolderPath);
 
         // htmlフォルダの制作
-        Crawler.linkFolderPath = folderPath.resolve("html");
+        this.linkFolderPath = folderPath.resolve("html");
         folderMaker.make(linkFolderPath);
 
         // 最大深度の設定
-        Crawler.maxDepth = maxDepth;
+        this.maxDepth = maxDepth;
     }
 
 
@@ -64,6 +64,9 @@ public class Crawler {
         
         // docを作る
         Document doc = docMake(url);
+        if (doc == null) {
+            return;
+        }
         
         // docListに追加
         docList.add(doc);
@@ -71,13 +74,17 @@ public class Crawler {
         // img, css, js を探す
         findResources(doc, resourceMap);
 
-        // link を探す
-        findLinks(doc, linkMap);
+        // linkを探してくる
+        List<String> nextLinks = findLinks(doc);
 
-        // link をクロール
+        // 見つけたlinkをクロール
         int nextDepth = currentDepth + 1;
-        List<String> links = new ArrayList<>(linkMap.keySet());
-        for(String link : links){
+        for(String link : nextLinks){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
             crawl(link, nextDepth);
         }
 
@@ -117,9 +124,9 @@ public class Crawler {
         }
     }
 
-    private void findLinks(Document doc, HashMap<String, Path> linkMap){
+    private List<String> findLinks(Document doc){
         LinkFinder linkFinder = new LinkFinder();
-        linkFinder.find(doc, linkMap);
+        return linkFinder.find(doc);
     }
 
     private void downloadResources(HashMap<String, Path> resourceMap, Path resourceFolderPath){
