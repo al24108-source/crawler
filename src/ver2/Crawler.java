@@ -7,7 +7,7 @@ import ver2.finder.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
+import java.util.List;
 
 public class Crawler {
 
@@ -16,6 +16,9 @@ public class Crawler {
 
     // linkを保存するパス
     static Path linkFolderPath;
+
+    // 最大深度
+    static int maxDepth;
 
     // docを保存する配列
     static ArrayList<Document> docList = new ArrayList<Document>();
@@ -27,16 +30,24 @@ public class Crawler {
     static HashMap<String, Path> resourceMap = new HashMap<String, Path>();
     
 
-    public Crawler(Path folderPath) {
-        Crawler.resourceFolderPath = folderPath.resolve("resource");
-        Crawler.linkFolderPath = folderPath.resolve("html");
+    public Crawler(Path folderPath, int maxDepth) {
         FolderMaker folderMaker = new FolderMaker();
+
+        // resourceフォルダの制作
+        Crawler.resourceFolderPath = folderPath.resolve("resource");
         folderMaker.make(resourceFolderPath);
+
+        // htmlフォルダの制作
+        Crawler.linkFolderPath = folderPath.resolve("html");
         folderMaker.make(linkFolderPath);
+
+        // 最大深度の設定
+        Crawler.maxDepth = maxDepth;
     }
 
+
     // クロールメソッド
-    public void crawl(String url, int currentDepth, int maxDepth) {
+    public void crawl(String url, int currentDepth) {
         
         // depthが残っていないならクロールせずに戻る
         if(currentDepth > maxDepth){
@@ -50,11 +61,10 @@ public class Crawler {
 
         // urlをlinkMapに追加　<url, そのurlから取得するファイルのパス>
         putLinkMap(url, linkFolderPath, linkMap);
-
-        // urlからdocを作る
-        DocMaker docMaker = new DocMaker();
-        Document doc = docMaker.make(url);
-
+        
+        // docを作る
+        Document doc = docMake(url);
+        
         // docListに追加
         docList.add(doc);
 
@@ -66,9 +76,9 @@ public class Crawler {
 
         // link をクロール
         int nextDepth = currentDepth + 1;
-        Set<String> links = linkMap.keySet();
+        List<String> links = new ArrayList<>(linkMap.keySet());
         for(String link : links){
-            crawl(link, nextDepth, maxDepth);
+            crawl(link, nextDepth);
         }
 
         // 全部終わってから実行
@@ -77,7 +87,7 @@ public class Crawler {
             downloadResources(resourceMap, resourceFolderPath);
 
             // linkを保存
-            saveDoc(resourceMap, linkMap, linkFolderPath);
+            saveDocuments(resourceMap, linkMap, linkFolderPath);
         }
 
     }
@@ -88,17 +98,22 @@ public class Crawler {
         Path filePath = linkFolderPath.resolve(fileName);
         linkMap.put(url, filePath);
     }
-    
+
+    public Document docMake(String url){
+        DocMaker docMaker = new DocMaker();
+        Document doc = docMaker.make(url);
+        return doc;
+    }
 
     private void findResources(Document doc, HashMap<String, Path> resourceMap){
         // img, css, js のURLを探す
-        ResourceFinder imgManager = new ImgFinder();
-        ResourceFinder cssManager = new CssFinder();
-        ResourceFinder jsManager = new JsFinder();
+        ResourceFinder imgFinder = new ImgFinder();
+        ResourceFinder cssFinder = new CssFinder();
+        ResourceFinder jsFinder = new JsFinder();
 
-        ResourceFinder[] resourceManagers = {imgManager, cssManager, jsManager};
-        for(ResourceFinder resourceManager : resourceManagers){
-            resourceManager.find(doc, resourceMap);
+        ResourceFinder[] resourceFinders = {imgFinder, cssFinder, jsFinder};
+        for(ResourceFinder resourceFinder : resourceFinders){
+            resourceFinder.find(doc, resourceMap);
         }
     }
 
@@ -112,9 +127,9 @@ public class Crawler {
         resourceDownloader.download(resourceMap, resourceFolderPath);
     }
 
-    private void saveDoc(HashMap<String, Path> resourceMap, HashMap<String, Path> linkMap, Path linkFolderPath){
+    private void saveDocuments(HashMap<String, Path> resourceMap, HashMap<String, Path> linkMap, Path linkFolderPath){
         DocSaver docSaver = new DocSaver();
         docSaver.save(docList, resourceMap, linkMap, linkFolderPath);
     }
-    
+
 }

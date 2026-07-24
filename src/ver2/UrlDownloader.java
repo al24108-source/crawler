@@ -142,7 +142,7 @@ public class UrlDownloader {
                 System.out.println(e);
             }
         }
-
+        
         return fileExtension;
     }
 }

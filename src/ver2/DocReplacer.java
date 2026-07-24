@@ -7,8 +7,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class DocManager {
-    public void manageResource(Document doc, HashMap<String, Path> resourceMap){
+public class DocReplacer {
+    public void replaceResource(Document doc, HashMap<String, Path> resourceMap){
 
         Elements links = doc.select("img[src]");
         for(Element element : links){
@@ -35,7 +35,7 @@ public class DocManager {
         }
     }
 
-    public void manageLink(Document doc, HashMap<String, Path> linkMap){
+    public void replaceLink(Document doc, HashMap<String, Path> linkMap){
         Elements links = doc.select("a[href]");
         for(Element element : links){
             String url = element.attr("abs:href");

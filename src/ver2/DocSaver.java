@@ -12,9 +12,9 @@ import org.jsoup.nodes.Document;
 public class DocSaver {
     public void save(ArrayList<Document> docList, HashMap<String, Path> resourceMap, HashMap<String, Path> linkMap, Path folderPath) {
         for(Document doc : docList){
-            DocManager docManager = new DocManager();
-            docManager.manageResource(doc, resourceMap);
-            docManager.manageLink(doc, linkMap);
+            DocReplacer docReplacer = new DocReplacer();
+            docReplacer.replaceResource(doc, resourceMap);
+            docReplacer.replaceLink(doc, linkMap);
             saveDoc(doc, linkMap.get(doc.location()));
         }
     }
