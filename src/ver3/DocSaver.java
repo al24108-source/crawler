@@ -10,10 +10,10 @@ import java.util.HashMap;
 import org.jsoup.nodes.Document;
 
 public class DocSaver {
-    public void save(ArrayList<Document> docList, HashMap<String, Path> resourceMap, HashMap<String, Path> linkMap, Path folderPath) {
+    public void save(ArrayList<Document> docList, HashMap<String, Path> linkMap, Path folderPath) {
         for(Document doc : docList){
             DocReplacer docReplacer = new DocReplacer();
-            docReplacer.replaceResource(doc, resourceMap);
+            docReplacer.replaceResource(doc, linkMap);
             docReplacer.replaceLink(doc, linkMap);
             saveDoc(doc, linkMap.get(doc.location()));
         }

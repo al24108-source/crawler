@@ -24,10 +24,8 @@ public class Crawler {
     ArrayList<Document> docList = new ArrayList<Document>();
 
     // docを書き換える際に使うマップ
-    // link用 <url, そのurlから取得するファイルのパス>
+    // <url, そのurlから取得するファイルのパス>
     HashMap<String, Path> linkMap = new HashMap<String, Path>();
-    // resource用 <url, そのurlから取得するファイルのパス>
-    HashMap<String, Path> resourceMap = new HashMap<String, Path>();
     
 
     public Crawler(Path folderPath, int maxDepth) {
@@ -72,7 +70,7 @@ public class Crawler {
         docList.add(doc);
 
         // img, css, js を探す
-        findResources(doc, resourceMap);
+        findResources(doc, linkMap);
 
         // linkを探してくる
         List<String> nextLinks = findLinks(doc);
@@ -91,10 +89,10 @@ public class Crawler {
         // 全部終わってから実行
         if(currentDepth <= 1){
             // resourceをダウンロード
-            downloadResources(resourceMap, resourceFolderPath);
+            downloadResources(linkMap, resourceFolderPath);
 
             // linkを保存
-            saveDocuments(resourceMap, linkMap, linkFolderPath);
+            saveDocuments(linkMap, linkFolderPath);
         }
 
     }
@@ -112,7 +110,7 @@ public class Crawler {
         return doc;
     }
 
-    private void findResources(Document doc, HashMap<String, Path> resourceMap){
+    private void findResources(Document doc, HashMap<String, Path> linkMap){
         // img, css, js のURLを探す
         ResourceFinder imgFinder = new ImgFinder();
         ResourceFinder cssFinder = new CssFinder();
@@ -120,7 +118,7 @@ public class Crawler {
 
         ResourceFinder[] resourceFinders = {imgFinder, cssFinder, jsFinder};
         for(ResourceFinder resourceFinder : resourceFinders){
-            resourceFinder.find(doc, resourceMap);
+            resourceFinder.find(doc, linkMap);
         }
     }
 
@@ -129,14 +127,14 @@ public class Crawler {
         return linkFinder.find(doc);
     }
 
-    private void downloadResources(HashMap<String, Path> resourceMap, Path resourceFolderPath){
+    private void downloadResources(HashMap<String, Path> linkMap, Path resourceFolderPath){
         ResourceDownloader resourceDownloader = new ResourceDownloader();
-        resourceDownloader.download(resourceMap, resourceFolderPath);
+        resourceDownloader.download(linkMap, resourceFolderPath);
     }
 
-    private void saveDocuments(HashMap<String, Path> resourceMap, HashMap<String, Path> linkMap, Path linkFolderPath){
+    private void saveDocuments(HashMap<String, Path> linkMap, Path linkFolderPath){
         DocSaver docSaver = new DocSaver();
-        docSaver.save(docList, resourceMap, linkMap, linkFolderPath);
+        docSaver.save(docList, linkMap, linkFolderPath);
     }
 
 }
