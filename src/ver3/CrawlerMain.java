@@ -1,4 +1,4 @@
-package ver2;
+package ver3;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
